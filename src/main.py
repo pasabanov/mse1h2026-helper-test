@@ -1,9 +1,9 @@
+from abc import ABC, abstractmethod
+from io import StringIO
 import os
 import sys
-from io import StringIO
-from abc import ABC, abstractmethod
-from pylint.lint import pylinter
-from pylint.lint import Run
+
+from pylint.lint import pylinter, Run
 from pylint.reporters.text import TextReporter
 
 
@@ -16,19 +16,18 @@ class Linter(ABC):
 class PylintWrapper(Linter):
 	def run(self, file_path: str):
 		pylinter.MANAGER.clear_cache()
-        pylint_output = StringIO()
+		pylint_output = StringIO()
 		reporter = TextReporter(pylint_output)
-	
 		try:
-            Run(
-                [file_path, '--score=n', '--disable=bad-indentation,missing-final-newline'], 
-                reporter=reporter,
-                exit=False 
-            )
-        except Exception as e:
-            return f"Pylint API Error: {str(e)}"
-        
-        return pylint_output.getvalue()
+			runner = Run([file_path, '--score=n', '--disable=bad-indentation,missing-final-newline'],
+				reporter=reporter,
+				exit=False
+				)
+			if runner.linter.msg_status & 1:
+				print('Pylint analysis finished with Fatal error (return code 1)')
+		except Exception as e:
+			return f'Pylint API Error: {str(e)}'
+		return pylint_output.getvalue()
 
 
 class LinterFactory:
