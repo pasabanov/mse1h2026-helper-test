@@ -1,5 +1,6 @@
 ---
 name: Задача
+about: Задача
 type: task
 ---
 
