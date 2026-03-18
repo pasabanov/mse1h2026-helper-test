@@ -1,6 +1,5 @@
 ---
-name: Предложение улучшения
-about: Описание улучшения
+name: Запрос на улучшение
 labels: feature
 type: feature
 ---

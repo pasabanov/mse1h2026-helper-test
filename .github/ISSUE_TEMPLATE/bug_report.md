@@ -1,6 +1,5 @@
 ---
 name: Сообщение об ошибке
-about: Описание ошибки
 labels: bug
 type: bug
 ---
