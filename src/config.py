@@ -1,0 +1,1 @@
+SUPPORTED_EXTENSIONS = ['.py', '.c', '.cpp', '.cc', '.cxx', '.c++', '.C', '.CPP', '.h', '.hpp', '.hh', '.hxx', '.h++', '.H', '.HPP']
