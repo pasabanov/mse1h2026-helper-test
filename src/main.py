@@ -5,6 +5,7 @@ import tempfile
 
 from .github_module import login, get_pull_request_metadata, download_pull_request_files
 from .linters import LinterFactory
+from src.report_generator import ReportGenerator
 
 
 def main():
@@ -30,8 +31,15 @@ def main():
 			for file_path in all_files:
 				linter = LinterFactory.get_linter(file_path)
 				messages = linter.run(file_path)
-				for m in messages:
-					print(f"{m.path}:{m.line}: [{m.msg_id}({m.symbol}), Object:'{m.obj}'] {m.msg}")
+				generator = ReportGenerator(
+					show_code_snippet = True,
+					snippet_context_lines = 2,
+					github_ref=pr.head.sha,
+					github_repo_url=pr.base.repo.html_url
+				)
+				report = generator.generate(messages)
+				print(report)
+				
 	except Exception as e:
 		print(f'Error: {e}')
 		sys.exit(1)
