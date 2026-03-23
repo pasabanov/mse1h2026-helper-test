@@ -48,5 +48,8 @@ docker run mse1h2026-helper PULL_REQUEST_URL
 ```bash
 docker run pasabanov/mse1h2026-helper https://github.com/moevm/mse1h2026-helper/pull/16
 ```
-
+Или, если образ был собран локально:
+```bash
+docker run mse1h2026-helper https://github.com/moevm/mse1h2026-helper/pull/16
+```
 Если приложение работает корректно, в консоли появится результат обработки указанного Pull Request.
