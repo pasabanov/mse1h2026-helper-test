@@ -8,6 +8,4 @@ tar -xzf oclint-*.tar.gz
 mkdir -p /opt/oclint
 cp -r oclint-22.02/* /opt/oclint/
 
-export PATH="/opt/oclint/bin:$PATH"
-
 rm -rf oclint-*
