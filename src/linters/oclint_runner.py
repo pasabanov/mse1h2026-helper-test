@@ -16,4 +16,4 @@ class OCLintWrapper(Linter):
 				return result.stderr + '\n\n' + result.stdout
 			return result.stdout
 		except Exception as e:
-			return f"OCLint error: {str(e)}"
+			return f'OCLint error: {str(e)}'
