@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List
 
 
 class Linter(ABC):
 	@abstractmethod
-	def run(self, file_path: str, options: Optional[List[str]] = None):
+	def run(self, file_path: str):
 		pass
