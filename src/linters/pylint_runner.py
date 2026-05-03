@@ -17,4 +17,6 @@ class PylintWrapper(Linter):
 			Run([file_path] + (pylint_options or DEFAULT_OPTIONS), reporter=reporter, exit=False)
 		except Exception as e:
 			return f'Pylint API Error: {str(e)}'
+		for message in reporter.messages:
+			message.linter = 'Pylint'
 		return reporter.messages

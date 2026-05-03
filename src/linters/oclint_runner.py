@@ -84,14 +84,14 @@ class OCLintWrapper(Linter):
 				end_column=end_col,
 			)
 
-			messages.append(
-				Message(
-					msg_id=msg_id,
-					symbol=symbol,
-					location=location,
-					msg=msg_text,
-					confidence=UNDEFINED,
-				)
-			)
+			message = Message(
+						msg_id=msg_id,
+						symbol=symbol,
+						location=location,
+						msg=msg_text,
+						confidence=UNDEFINED,
+					)
+			message.linter = 'OCLint'
+			messages.append(message)
 
 		return messages

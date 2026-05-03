@@ -1,7 +1,10 @@
+import re
 from pathlib import PurePath
 from typing import List, Optional
 
 from pylint.message import Message
+
+TMP_PREFIX = re.compile(r'^/tmp/tmp[^/]+/')
 
 
 class ReportGenerator:
@@ -26,7 +29,7 @@ class ReportGenerator:
 
 	def generate(self, messages: List[Message]) -> str:
 		if not messages:
-			return 'No issues found by Pylint.\n'
+			return 'No issues found.\n'
 
 		messages_by_file = self._group_by_file(messages)
 		lines = []
@@ -54,18 +57,9 @@ class ReportGenerator:
 	def _format_path(self, path: str) -> str:
 		if not path:
 			return path
-
-		normalized = str(PurePath(path)).replace('\\', '/')
-		parts = normalized.split('/')
-
-		for i, part in enumerate(parts):
-			if part in self._PATH_MARKERS and i + 1 < len(parts):
-				return '/'.join(parts[i:]).lstrip('/')
-
-		clean_parts = [p for p in parts if p]
-		if len(clean_parts) >= 2:
-			return '/'.join(clean_parts[-2:])
-		return clean_parts[-1] if clean_parts else normalized
+		path = path.replace('\\', '/')
+		path = TMP_PREFIX.sub('', path)
+		return path.lstrip('/')
 
 	def _extract_repo_path(self, file_path: str) -> str:
 		"""Converts absolute path (/tmp/xxx/src/file.py) to a path inside a repository (src/file.py)"""
@@ -99,9 +93,10 @@ class ReportGenerator:
 		return f'{base}/pull/files'
 
 	def _format_message(self, msg: Message, display_path: str) -> str:
+		linter = getattr(msg, 'linter', 'Unknown linter')
 		hosting_link = self._make_link(msg.abspath, msg.line, msg.column)
 
-		first_line = '[Pylint]'
+		first_line = f'[{linter}]'
 		second_line = f'{display_path}:{msg.line}: {msg.msg_id}: {msg.msg}'
 		third_line = f'{hosting_link}'
 

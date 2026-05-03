@@ -83,33 +83,6 @@ def main():
 	try:
 		if args.severity or args.oclint:
 			raise NotImplementedError('Функциональность ещё не реализована')
-# <<<<<<< HEAD
-# 		if args.pylint:
-# 			linter_options.pylint_options = []
-# 			for opt in shlex.split(args.pylint):
-# 				if opt:
-# 					pylint_options.append(opt)
-# 		client = login(args.token, args.pr_url)
-# 		pr = get_pull_request_metadata(client, args.pr_url)
-# 		with tempfile.TemporaryDirectory() as tmpdir:
-# 			all_files = download_pull_request_files(client, pr, tmpdir)
-# 			if not all_files:
-# 				raise Exception('В PR нет подходящих для анализа файлов')
-# 			for file_path in all_files:
-# 				linter = LinterFactory.get_linter(file_path)
-# 				messages = linter.run(file_path)
-# 				generator = ReportGenerator(
-# 					show_code_snippet = True,
-# 					snippet_context_lines = 2,
-# 					github_ref=pr.merge_commit_sha,
-# 					github_repo_url=pr.html_url
-# 				)
-# 				if file_path.endswith('.py'):
-# 					report = generator.generate(messages)
-# 					print(report)
-# 				else:
-# 					print(messages)
-# =======
 		if (args.pr_range or args.pr_include or args.pr_exclude) and not args.repo:
 			raise ValueError('Флаги --pr-range, --pr-include, --pr-exclude требуют указания --repo')
 		pr_urls = collect_pr_urls(args)
@@ -118,7 +91,6 @@ def main():
 		for pr_url in pr_urls:
 			g = login(args.token, pr_url)
 			process_pull_request(g, pr_url)
-# >>>>>>> 9827f16 (Добавлены флаги для гибкой настройки списка PR)
 	except Exception as e:
 		print(f'Error: {e}')
 		sys.exit(1)
