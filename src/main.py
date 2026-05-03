@@ -9,8 +9,15 @@ from .linters import LinterFactory
 from .reports import ReportGenerator
 from .linters import options as linter_options
 
+GITHUB_PR_URL_REGEX = re.compile(r'^https?://github\.com/[^/]+/[^/]+/pull/\d+/?$')
+FORGEJO_PR_URL_REGEX = re.compile(r'^https?://[^/]+/[^/]+/pulls?/\d+/?$')
+PR_RANGE_REGEX = re.compile(r'^(\d+)-(\d+)$')
+
+def is_valid_pr_url(url: str) -> bool:
+    return bool(GITHUB_PR_URL_REGEX.match(url) or FORGEJO_PR_URL_REGEX.match(url))
+
 def parse_pr_range(range_str):
-	match = re.match(r'^(\d+)-(\d+)$', range_str)
+	match = PR_RANGE_REGEX.match(range_str)
 	if not match:
 		raise ValueError(f'Invalid PR range format: {range_str}')
 	start, end = int(match.group(1)), int(match.group(2))
@@ -80,6 +87,10 @@ def main():
 		sys.exit(1)
 	args, remaining = parser.parse_known_args()
 	args.pr_urls = remaining
+	invalid = [url for url in args.pr_urls if not is_valid_pr_url(url)]
+	if any(not is_valid_pr_url(url) for url in args.pr_urls):
+		raise ValueError(f'Invalid PR URL(s): {", ".join(invalid)}')
+	del invalid
 	try:
 		if args.severity or args.oclint:
 			raise NotImplementedError('Функциональность ещё не реализована')
