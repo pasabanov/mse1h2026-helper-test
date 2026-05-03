@@ -54,15 +54,19 @@ def get_pull_request_metadata(client, pr_url: str) -> PullRequest:
 	user_id = safe_str(
 		user.get('login_name') or user.get('login') or user.get('username')
 	)
+	print('pr_data:', pr_data, flush=True)
+	print('merge_commit_sha:', pr_data.get('merge_commit_sha'), flush=True)
+	print('base.sha:', pr_data['base'].get('sha'), flush=True)
 	return PullRequest(
 		body=safe_str(pr_data.get('body')),
 		changed_files=changed_files, 
 		closed_at=parse_datetime(pr_data.get('closed_at')),
 		created_at=parse_datetime(pr_data['created_at']),
 		draft=bool(pr_data.get('draft', False)),
-		html_url=safe_str(pr_data.get('html_url'), default=pr_url),
+		repo_url=f'{client.base_url}/{owner}/{repo_name}',
+		pr_url=safe_str(pr_data.get('html_url'), default=pr_url),
 		labels=labels,
-		merge_commit_sha=pr_data.get('merge_commit_sha'),
+		merge_commit_sha=pr_data['base'].get('sha'),
 		merged=bool(pr_data.get('merged', False)),
 		merged_at=parse_datetime(pr_data.get('merged_at')),
 		number=pr_number,

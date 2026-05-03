@@ -45,21 +45,22 @@ def process_pull_request(g, pr_url):
 	pr = get_pull_request_metadata(g, pr_url)
 	with tempfile.TemporaryDirectory() as tmpdir:
 		print("PR: ", pr_url)
-		all_files = download_pull_request_files(pr, tmpdir)
-		if not all_files:
-			print(f'Warning: No suitable files found in PR {pr_url}')
-			return
-		for file_path in all_files:
-			linter = LinterFactory.get_linter(file_path)
-			messages = linter.run(file_path)
-			generator = ReportGenerator(
-				show_code_snippet=True,
-				snippet_context_lines=2,
-				github_ref=pr.head.sha,
-				github_repo_url=pr.base.repo.html_url
-		)
-		report = generator.generate(messages)
-		print(report)
+		with tempfile.TemporaryDirectory() as tmpdir:
+			all_files = download_pull_request_files(g, pr, tmpdir)
+			if not all_files:
+				print(f'Warning: No suitable files found in PR {pr_url}')
+				return
+			for file_path in all_files:
+				linter = LinterFactory.get_linter(file_path)
+				messages = linter.run(file_path)
+				generator = ReportGenerator(
+					show_code_snippet=True,
+					snippet_context_lines=2,
+					github_ref=pr.merge_commit_sha,
+					github_repo_url=pr.repo_url
+			)
+			report = generator.generate(messages)
+			print(report)
 
 def main():
 	parser = argparse.ArgumentParser(

@@ -14,7 +14,8 @@ class PullRequest:
 	closed_at: Optional[datetime]
 	created_at: datetime
 	draft: bool
-	html_url: str
+	repo_url: str
+	pr_url: str
 	labels: List[str]
 	merge_commit_sha: Optional[str]
 	merged: bool

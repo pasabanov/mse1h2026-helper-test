@@ -28,7 +28,8 @@ def get_pull_request_metadata(g: Github, pr_url: str) -> PullRequest:
 		closed_at=pr.closed_at,
 		created_at=pr.created_at,
 		draft=getattr(pr, 'draft', False),
-		html_url=pr.html_url,
+		repo_url=repo.html_url,
+		pr_url=pr.html_url,
 		labels=labels,
 		merge_commit_sha=pr.merge_commit_sha,
 		merged=pr.merged,
@@ -50,6 +51,7 @@ def download_pull_request_files(
 	pr_metadata: PullRequest,
 	local_dir: str
 ) -> List[str]:
+	print('github', flush=True)
 	repo = client.get_repo(f'{pr_metadata.org_id}/{pr_metadata.repo_id}')
 	pr = repo.get_pull(pr_metadata.number)
 	downloaded_paths = []

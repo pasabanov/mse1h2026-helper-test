@@ -76,7 +76,7 @@ class ReportGenerator:
 		ref = self._github_info['ref']
 
 		if ref:
-			return f'{base}/blob/{ref}/{clean_path}#L{line}'
+			return f'{base}/blob/{ref}/{file_path}#L{line}'
 		return f'{base}/pull/files'
 
 	def _format_message(self, msg: Message, display_path: str) -> str:
