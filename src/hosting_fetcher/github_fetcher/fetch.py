@@ -51,7 +51,6 @@ def download_pull_request_files(
 	pr_metadata: PullRequest,
 	local_dir: str
 ) -> List[str]:
-	print('github', flush=True)
 	repo = client.get_repo(f'{pr_metadata.org_id}/{pr_metadata.repo_id}')
 	pr = repo.get_pull(pr_metadata.number)
 	downloaded_paths = []

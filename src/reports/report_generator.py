@@ -11,17 +11,17 @@ class ReportGenerator:
 		self,
 		show_code_snippet: bool = True,
 		snippet_context_lines: int = 2,
-		github_ref: Optional[str] = None,
-		github_repo_url: Optional[str] = None
+		hosting_ref: Optional[str] = None,
+		hosting_repo_url: Optional[str] = None
 	):
 		self.show_code_snippet = show_code_snippet
 		self.snippet_context_lines = snippet_context_lines
 
-		self._github_info = None
-		if github_ref and github_repo_url:
-			self._github_info = {
-				'ref': github_ref,
-				'repo_url': github_repo_url.rstrip('/')
+		self._hosting_info = None
+		if hosting_ref and hosting_repo_url:
+			self._hosting_info = {
+				'ref': hosting_ref,
+				'repo_url': hosting_repo_url.rstrip('/')
 			}
 
 	def generate(self, messages: List[Message]) -> str:
@@ -67,24 +67,43 @@ class ReportGenerator:
 			return '/'.join(clean_parts[-2:])
 		return clean_parts[-1] if clean_parts else normalized
 
-	def _make_github_link(self, file_path: str, line: int, column: int) -> str:
-		if not self._github_info:
+	def _extract_repo_path(self, file_path: str) -> str:
+		"""Converts absolute path (/tmp/xxx/src/file.py) to a path inside a repository (src/file.py)"""
+		normalized = file_path.replace('\\', '/')
+		parts = normalized.split('/')
+
+		for i, part in enumerate(parts):
+			if part in self._PATH_MARKERS:
+				return '/'.join(parts[i:])
+
+		return parts[-1]  # fallback: file name
+
+	def _detect_hosting(self, repo_url: str) -> str:
+		return 'github' if 'github.com' in repo_url else 'forgejo'
+
+	def _make_link(self, file_path: str, line: int, column: int) -> str:
+		if not self._hosting_info:
 			return f'{file_path}:{line}:{column}'
 
-		clean_path = file_path.replace('\\', '/').lstrip('/')
-		base = self._github_info['repo_url']
-		ref = self._github_info['ref']
+		clean_path = self._extract_repo_path(file_path)
+
+		base = self._hosting_info['repo_url']
+		ref = self._hosting_info['ref']
 
 		if ref:
-			return f'{base}/blob/{ref}/{file_path}#L{line}'
+			hosting = self._detect_hosting(base)
+			if hosting == 'github':
+				return f'{base}/blob/{ref}/{clean_path}#L{line}'
+			else:
+				return f'{base}/src/commit/{ref}/{clean_path}#L{line}'
 		return f'{base}/pull/files'
 
 	def _format_message(self, msg: Message, display_path: str) -> str:
-		github_link = self._make_github_link(display_path, msg.line, msg.column)
+		hosting_link = self._make_link(msg.abspath, msg.line, msg.column)
 
 		first_line = '[Pylint]'
 		second_line = f'{display_path}:{msg.line}: {msg.msg_id}: {msg.msg}'
-		third_line = f'{github_link}'
+		third_line = f'{hosting_link}'
 
 		lines = [first_line, second_line, third_line]
 

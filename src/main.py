@@ -56,8 +56,8 @@ def process_pull_request(g, pr_url):
 				generator = ReportGenerator(
 					show_code_snippet=True,
 					snippet_context_lines=2,
-					github_ref=pr.merge_commit_sha,
-					github_repo_url=pr.repo_url
+					hosting_ref=pr.merge_commit_sha,
+					hosting_repo_url=pr.repo_url
 			)
 			report = generator.generate(messages)
 			print(report)
